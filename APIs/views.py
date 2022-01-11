@@ -1,12 +1,9 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 
-from .models import Submission, Attachment
-from .serializer import SubmissionSerializer, AttachmentSerializer
+from .models import Submission
+from .serializer import SubmissionSerializer
 
-from rest_framework.parsers import JSONParser
+
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
@@ -19,7 +16,7 @@ def GetAllSubmission(request):
 
 
 @api_view(['GET'])
-def GetSubmission(request, id=2):
+def GetSubmission(request, id=0):
     try:
         submission = Submission.objects.get(SubmissionID=id)
         submission_serializer = SubmissionSerializer(submission, many=False)
@@ -28,9 +25,14 @@ def GetSubmission(request, id=2):
         return Response("submission data not exist")
 
 
-@api_view(['PATCH'])
+@api_view(['POST'])
 def AddSubmission(request):
-    submission_serializer = SubmissionSerializer(data=request.data)
+    if len(request.FILES) > 0:
+        SaveFile(request)
+    submission = dict()
+    submission["Title"] = request.data["Title"]
+    submission["Discription"] = request.data["Discription"]
+    submission_serializer = SubmissionSerializer(data=submission)
     if submission_serializer.is_valid():
         submission_serializer.save()
         return Response(submission_serializer.data)
@@ -66,8 +68,10 @@ def DeleteSubmission(request, id=0):
         return Response("submission data not exist")
 
 
-@csrf_exempt
 def SaveFile(request):
-    file = request.FILES['attachment']
-    file_name = default_storage.save(file.name, file)
-    return JsonResponse("Add Successfully: "+file_name, safe=False)
+    try:
+        file = request.FILES['attachment']
+        file_name = default_storage.save(file.name, file)
+        return True
+    except Exception:
+        return False

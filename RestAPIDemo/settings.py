@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework',
     'corsheaders',
     'APIs.apps.ApisConfig'
@@ -67,6 +68,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny'
     ]
 }
+
 ROOT_URLCONF = 'RestAPIDemo.urls'
 
 TEMPLATES = [

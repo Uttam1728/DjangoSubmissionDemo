@@ -54,7 +54,7 @@ def AddSubmission(request):
                 attachment_serializer.save()
                 response_msg += ", Attachment Saved SuccsessFully"
             else:
-                Response(data=attachment_serializer.data)
+                Response(data=attachment_serializer.errors)
         return Response(response_msg)
     else:
         return Response(data=submission_serializer.errors)

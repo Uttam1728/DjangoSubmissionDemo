@@ -1,4 +1,3 @@
-
 from APIs import views
 from django.conf.urls import url, include
 from django.conf.urls.static import static
@@ -10,6 +9,8 @@ urlpatterns = [
     url(r'^submissionDetail/([0-9]+)/$', views.GetSubmission),
     url(r'^AddsubmissionDetail$', views.AddSubmission),
     url(r'^EditsubmissionDetail/([0-9]+)$', views.EditSubmission),
-    url(r'^DeletesubmissionDetail/([0-9]+)$', views.DeleteSubmission)
+    url(r'^DeletesubmissionDetail/([0-9]+)$', views.DeleteSubmission),
+    url(r'^attachmentlist$', views.GetAllAttachments),
+    url(r'^attachmentDetail/([0-9]+)/$', views.GetAttachments)
 
-]+static(settings.MEDIA_URL, document_roor=settings.MEDIA_ROOT)
+]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

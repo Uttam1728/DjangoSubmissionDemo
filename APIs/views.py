@@ -1,12 +1,9 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 
-from .models import Submission, Attachment
-from .serializer import SubmissionSerializer, AttachmentSerializer
+from RestAPIDemo.settings import MEDIA_URL
+from .models import Attachment, Submission
+from .serializer import AttachmentSerializer, SubmissionSerializer
 
-from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
@@ -19,7 +16,7 @@ def GetAllSubmission(request):
 
 
 @api_view(['GET'])
-def GetSubmission(request, id=2):
+def GetSubmission(request, id=0):
     try:
         submission = Submission.objects.get(SubmissionID=id)
         submission_serializer = SubmissionSerializer(submission, many=False)
@@ -28,12 +25,37 @@ def GetSubmission(request, id=2):
         return Response("submission data not exist")
 
 
-@api_view(['PATCH'])
+@api_view(['POST'])
 def AddSubmission(request):
-    submission_serializer = SubmissionSerializer(data=request.data)
+    response_msg = ""
+    is_file_exist = len(request.FILES)
+
+    # If file exist in request than First Save and Create Attachment Obj.
+    if is_file_exist:
+        file_name = SaveFile(request)
+        if file_name == "not uploaded":
+            return Response("File Upload Failed")
+        attachment = dict()
+        attachment["URL"] = "api" + MEDIA_URL + file_name
+        attachment["AlterTitle"] = file_name
+
+    submission = dict()
+    submission["Title"] = request.data["Title"]
+    submission["Discription"] = request.data["Discription"]
+    submission_serializer = SubmissionSerializer(data=submission)
+
     if submission_serializer.is_valid():
         submission_serializer.save()
-        return Response(submission_serializer.data)
+        response_msg += " Submission Saved SuccsessFully"
+        if is_file_exist:
+            attachment["Submission"] = submission_serializer.data["SubmissionID"]
+            attachment_serializer = AttachmentSerializer(data=attachment)
+            if attachment_serializer.is_valid():
+                attachment_serializer.save()
+                response_msg += ", Attachment Saved SuccsessFully"
+            else:
+                Response(data=attachment_serializer.data)
+        return Response(response_msg)
     else:
         return Response(data=submission_serializer.errors)
 
@@ -66,8 +88,27 @@ def DeleteSubmission(request, id=0):
         return Response("submission data not exist")
 
 
-@csrf_exempt
 def SaveFile(request):
-    file = request.FILES['attachment']
-    file_name = default_storage.save(file.name, file)
-    return JsonResponse("Add Successfully: "+file_name, safe=False)
+    try:
+        file = request.FILES['attachment']
+        file_name = default_storage.save(file.name, file)
+        return file_name
+    except Exception:
+        return "not uploaded"
+
+
+@api_view(['GET'])
+def GetAllAttachments(request):
+    attachments = Attachment.objects.all()
+    attachment_serializer = AttachmentSerializer(attachments, many=True)
+    return Response(attachment_serializer.data)
+
+
+@api_view(['GET'])
+def GetAttachments(request, id=0):
+    try:
+        attachment = Submission.objects.get(AttachmentID=id)
+        attachment_serializer = AttachmentSerializer(attachment, many=False)
+        return Response(attachment_serializer.data)
+    except Submission.DoesNotExist:
+        return Response("attachment data not exist")

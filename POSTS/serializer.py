@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from APIs.models import Submission, Attachment
+from POSTS.models import Post, Attachment
 
 
-class SubmissionSerializer(serializers.ModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Submission
+        model = Post
         fields = '__all__'
 
 

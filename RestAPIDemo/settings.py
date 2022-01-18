@@ -46,7 +46,8 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'corsheaders',
-    'APIs.apps.ApisConfig'
+    'APIs.apps.ApisConfig',
+    'POSTS.apps.PostsConfig'
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -74,7 +75,7 @@ ROOT_URLCONF = 'RestAPIDemo.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

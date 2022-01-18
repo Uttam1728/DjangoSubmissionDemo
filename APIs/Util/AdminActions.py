@@ -1,5 +1,6 @@
 from django.contrib import admin, messages
 from django.utils.translation import ngettext
+from django.db.models import Model
 
 from datetime import date
 from APIs.Util.CommonFunc import CreatePost
@@ -8,6 +9,7 @@ from APIs.Util.CommonFunc import CreatePost
 @admin.action(description='Mark selected Submission as published')
 def make_published(self, request, queryset):
     # print(request)
+
     CreatePost(queryset, request)
     updated = queryset.update(
         Status=2, ApprovedOn=date.today(), ApprovedBy=request.user)
@@ -28,3 +30,8 @@ def make_submitted(self, request, queryset):
         '%d stories were successfully marked as Submitted.',
         updated,
     ) % updated, messages.SUCCESS)
+
+
+def create_Post(request, queryset):
+    print(request)
+    # create Post and attachment models

@@ -87,6 +87,8 @@ def DeleteSubmission(request, id=0):
     except Submission.DoesNotExist:
         return Response("submission data not exist")
 
+# s3
+
 
 def SaveFile(request):
     try:

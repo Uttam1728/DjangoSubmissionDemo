@@ -5,9 +5,7 @@ from django.contrib.admin.options import (
     HttpResponseRedirect,
     unquote
 )
-
 from APIs.models import Submission, Attachment as sub_attachment
-from POSTS.models import Post, Attachment as post_attachment
 from APIs.Util.AdminActions import make_published, make_submitted, create_Post
 
 
@@ -45,5 +43,3 @@ class SubmissionAdmin(admin.ModelAdmin):
 
 # admin.site.register(Submission)
 admin.site.register(sub_attachment)
-admin.site.register(Post)
-admin.site.register(post_attachment)
